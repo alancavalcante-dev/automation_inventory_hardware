@@ -1,0 +1,134 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time, os, psutil, smtplib, email.message
+import pyautogui as auto
+from dotenv import load_dotenv
+
+
+class BotGoogleDrive:
+    def __init__(self) -> None:     
+        
+        load_dotenv()
+
+        self.EMAIL = os.getenv("EMAIL_GD")
+        self.PASSWORD = os.getenv("PASSWORD_GD")
+
+
+        self.SITE_LINK = "https://docs.google.com/spreadsheets/d/17XBjcZF2eCStKIsaS3HqL1ySbGGn1_Kg/edit#gid=825153193"
+        self.SITE_MAPA = {
+            "buttons": {
+                'email'  : {'xpath' : '/html/body/div[1]/div[1]/div[2]/div/c-wiz/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input',
+                            'xpath2' :'/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div[1]/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input'},
+
+                'seguinte':{'xpath' : '/html/body/div[1]/div[1]/div[2]/div/c-wiz/div/div[2]/div/div[2]/div/div[1]/div/div/button/span',
+                            'xpath2': '/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[3]/div/div[1]/div/div/button'},
+
+                'senha'  : {'xpath' : '/html/body/div[1]/div[1]/div[2]/div/c-wiz/div/div[2]/div/div[1]/div/form/span/section[2]/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input',
+                            'xpath2': '/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div/form/span/section[2]/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input'},
+
+                'acessar':{'xpath' : '/html/body/div[1]/div[1]/div[2]/div/c-wiz/div/div[2]/div/div[2]/div/div[1]/div/div/button/span',
+                           'xpath2': '/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[3]/div/div[1]/div/div/button'}
+            }
+        }
+
+
+
+    def copiar_e_fechar(self, path_file):
+        time.sleep(5)
+        os.chdir(path_file)
+        os.system('Start relatorio.xlsx')
+        time.sleep(5)
+        auto.hotkey('ctrl','shiftright','shiftleft','end')
+        time.sleep(5)
+        auto.hotkey('ctrl', 'c')
+        time.sleep(5)
+
+
+
+
+    def fechar_excel(self):
+        try:
+            # Iterar sobre todos os processos em execução
+            for processo in psutil.process_iter(['pid', 'name']):
+                # Verifica se o nome do processo é "EXCEL.EXE"
+                if "EXCEL.EXE" in processo.info['name']:
+                    try:
+                        # Tenta encerrar o processo do Excel
+                        psutil.Process(processo.info['pid']).terminate()
+                        print("Todas as instâncias do Excel foram encerradas.")
+                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                        pass
+        except Exception as e:
+            print(f"Erro: {e}")
+
+
+
+
+
+
+    def entrar_site(self):
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"  
+       
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument(f'--user-agent={user_agent}')
+
+        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver.maximize_window()
+
+        time.sleep(3)
+        self.driver.get(self.SITE_LINK)
+        time.sleep(10)
+
+        self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['email']['xpath2']).send_keys(self.EMAIL)
+        time.sleep(2)
+        
+        self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['seguinte']['xpath2']).click()
+        time.sleep(5)
+
+        self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['senha']['xpath2']).send_keys(self.PASSWORD)
+        time.sleep(3)
+
+        self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['acessar']['xpath2']).click()
+        time.sleep(5)
+        
+
+    def importar(self):
+        time.sleep(15)
+        auto.hotkey('ctrl', 'a')
+        time.sleep(5)
+
+        auto.press('del')
+        time.sleep(3)
+
+        auto.hotkey('ctrl', 'v')
+        time.sleep(5)
+
+        self.driver.close()
+        time.sleep(2)
+        self.fechar_excel()
+
+
+   
+
+    def disparar_email(self, email_destinatario, titulo, corpo):
+        try:
+            key = os.getenv("KEY_SHOOT_EMAIL")
+
+            msg = email.message.Message()
+            msg['Subject'] = titulo # Título
+            msg['From'] = 'guimera.sistem@gmail.com' # Remetente
+            msg['To'] = f'{email_destinatario}' # destinatário
+
+            msg.add_header('Content-Type', 'text/html') # Configurações site html
+            msg.set_payload(corpo) # Corpo email/descrição
+
+            s = smtplib.SMTP('smtp.gmail.com: 587') # Servidor e porta de acesso ao Gmail
+            s.starttls() # Executação da porta e servidor
+            # Login Credentials for sending the mail
+            s.login(msg['From'], key) # Login da conta: email, e a senha
+            s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8')) # Envio da mensagem
+
+            return True
+        except:
+            return False
+
