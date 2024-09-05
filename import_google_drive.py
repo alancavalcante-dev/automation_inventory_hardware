@@ -1,12 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time, os, psutil, smtplib, email.message
+import os, psutil, smtplib, email.message
 import pyautogui as auto
+from environment import Timer
 from dotenv import load_dotenv
 
 
 class BotGoogleDrive:
     def __init__(self) -> None:     
+        self.tm = Timer()
+
         
         load_dotenv()
 
@@ -34,14 +37,14 @@ class BotGoogleDrive:
 
 
     def copiar_e_fechar(self, path_file):
-        time.sleep(5)
+        self.tm.small()
         os.chdir(path_file)
         os.system('Start relatorio.xlsx')
-        time.sleep(5)
+        self.tm.long()
         auto.hotkey('ctrl','shiftright','shiftleft','end')
-        time.sleep(5)
+        self.tm.small()
         auto.hotkey('ctrl', 'c')
-        time.sleep(5)
+        self.tm.small()
 
 
 
@@ -56,6 +59,7 @@ class BotGoogleDrive:
                         # Tenta encerrar o processo do Excel
                         psutil.Process(processo.info['pid']).terminate()
                         print("Todas as instâncias do Excel foram encerradas.")
+                        break
                     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                         pass
         except Exception as e:
@@ -75,36 +79,36 @@ class BotGoogleDrive:
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.maximize_window()
 
-        time.sleep(3)
+        self.tm.small()
         self.driver.get(self.SITE_LINK)
-        time.sleep(10)
+        self.tm.small()
 
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['email']['xpath2']).send_keys(self.EMAIL)
-        time.sleep(2)
+        self.tm.small()
         
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['seguinte']['xpath2']).click()
-        time.sleep(5)
+        self.tm.small()
 
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['senha']['xpath2']).send_keys(self.PASSWORD)
-        time.sleep(3)
+        self.tm.small()
 
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['acessar']['xpath2']).click()
-        time.sleep(5)
+        self.tm.small()
         
 
     def importar(self):
-        time.sleep(15)
+        self.tm.long()
         auto.hotkey('ctrl', 'a')
-        time.sleep(5)
+        self.tm.long()
 
         auto.press('del')
-        time.sleep(3)
+        self.tm.long()
 
         auto.hotkey('ctrl', 'v')
-        time.sleep(5)
+        self.tm.long()
 
         self.driver.close()
-        time.sleep(2)
+        self.tm.small()
         self.fechar_excel()
 
 

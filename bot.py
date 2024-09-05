@@ -1,8 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time
 import pyautogui as auto
 from dotenv import load_dotenv
+from environment import Timer
 import os
 
 
@@ -11,6 +11,7 @@ class Bot:
     def __init__(self) -> None:     
         
         load_dotenv()
+        self.tm = Timer()
 
         self.EMAIL = os.getenv("EMAIL_PD")
         self.PASSWORD = os.getenv("PASSWORD_PD")
@@ -43,32 +44,32 @@ class Bot:
 
 
     def entrar_site(self):
-        time.sleep(3)
+        self.tm.small()
         self.driver.get(self.SITE_LINK)
-        time.sleep(10)
+        self.tm.small()
 
     def logar(self):
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['email']['xpath']).send_keys(self.EMAIL)
-        time.sleep(2)
+        self.tm.small()
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['senha']['xpath']).send_keys(self.PASSWORD)
-        time.sleep(1)
+        self.tm.small()
 
         try:
             auto.locateCenterOnScreen('captcha.PNG', confidence=0.8)
 
             self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['captcha']['xpath']).click()
-            time.sleep(5)
+            self.tm.small()
 
             self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['login']['xpath']).click()
-            time.sleep(10)
+            self.tm.small()
         except:
 
             self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['login']['xpath']).click()
-            time.sleep(10)
+            self.tm.small()
 
     def exportar(self):
         self.driver.find_element(By.XPATH ,self.SITE_MAPA['buttons']['exportar']['xpath2']).click()
-        time.sleep(10)
+        self.tm.small()
         self.driver.quit()
 
 
