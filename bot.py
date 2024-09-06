@@ -11,6 +11,8 @@ class Bot:
     def __init__(self) -> None:     
         
         load_dotenv()
+
+
         self.tm = Timer()
 
         self.EMAIL = os.getenv("EMAIL_PD")
