@@ -14,12 +14,11 @@ class BotGoogleDrive:
         load_dotenv()
 
 
-
         self.EMAIL = os.getenv("EMAIL_GD")
         self.PASSWORD = os.getenv("PASSWORD_GD")
+        self.SITE_LINK = os.getenv("LINK_SITE_GD")
+        
 
-
-        self.SITE_LINK = "https://docs.google.com/spreadsheets/d/17XBjcZF2eCStKIsaS3HqL1ySbGGn1_Kg/edit#gid=825153193"
         self.SITE_MAPA = {
             "buttons": {
                 'email'  : {'xpath' : '/html/body/div[1]/div[1]/div[2]/div/c-wiz/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input',

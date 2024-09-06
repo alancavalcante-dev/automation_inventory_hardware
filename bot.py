@@ -17,9 +17,9 @@ class Bot:
 
         self.EMAIL = os.getenv("EMAIL_PD")
         self.PASSWORD = os.getenv("PASSWORD_PD")
+        self.SITE_LINK = os.getenv("LINK_SITE_PD")
 
-
-        self.SITE_LINK = "https://aether.pandasecurity.com/#/reports/hardwareInventory/list/3b82e840-f013-4e7b-bfc7-8edac83ae029?sort=hostName&page=1&asc=true&searching=true"
+        
         self.SITE_MAPA = {
             "buttons": {
                 'email'  : {'xpath' : '/html/body/article/main/div/section/form/section/div/input[1]'},
